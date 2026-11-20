@@ -1,0 +1,33 @@
+# Scratch / temporary files
+tmp/
+.tmp/
+
+# Workspace tooling must never enter this repository
+.claude/
+CLAUDE.md
+.mcp.json
+.tools/
+.workflow/
+.local/
+.vscode/
+hybrid.config.json
+*.code-workspace
+
+# Secrets and OS/dependency noise
+.env
+.env.*
+!.env.example
+.DS_Store
+node_modules/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+coverage/
+dist/
+build/
+.next/
+target/
+
+# PlatformIO
+.pio/
