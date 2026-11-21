@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parakopter · sterowanie</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><a class="brand" href="/">✳ PARAKOPTER <span>CONTROL / 02</span></a><div id="connection" class="badge">Rozłączony</div></header>
+<main>
+<section class="intro"><div><p class="eyebrow">SYMA S107 · ESP32 · PODCZERWIEŃ</p><h1>Ty za sterami.</h1><p class="sub">Klawiatura, pełny gaz 0–127 i STOP pod ręką.</p></div><button id="stop" class="stop">■ STOP <small>lub Esc / puść Spację</small></button></section>
+<div id="message" role="status" aria-live="polite">Łączenie z panelem…</div>
+<section class="connection card"><div><span class="step">USB</span><strong>Połączenie z płytką</strong></div><div class="connection-controls"><select id="port" aria-label="Port ESP32"></select><button id="refresh" class="quiet">Odśwież</button><button id="connect">Połącz</button><button id="disconnect" class="quiet">Rozłącz</button></div></section>
+<div class="layout">
+<div class="workflow">
+<section class="card motor">
+<div class="title"><span class="step">01</span><div><h2>Sterowanie</h2><p>Nadawanie trwa, dopóki trzymasz Spację lub przycisk</p></div></div>
+<label class="check enable"><input id="controlsEnabled" type="checkbox"><span>Włącz sterowanie</span></label>
+<div class="keyboard-guide">
+<div><kbd data-key="Space">Spacja</kbd><span>Trzymaj, aby nadawać</span></div>
+<div><span><kbd data-key="KeyW">W</kbd> <kbd data-key="KeyS">S</kbd></span><span>Gaz + / −</span></div>
+<div><span><kbd data-key="ArrowLeft">←</kbd> <kbd data-key="ArrowRight">→</kbd></span><span>Skręt lewo / prawo</span></div>
+<div><span><kbd data-key="ArrowUp">↑</kbd> <kbd data-key="ArrowDown">↓</kbd></span><span>Przód / tył</span></div>
+</div>
+<p id="keyboardState" class="hint">Zaznacz „Włącz sterowanie”, aby używać klawiszy</p>
+<p class="hint">W/S zmienia gaz stopniowo. Po puszczeniu W/S gaz zostaje; po puszczeniu strzałek kierunek wraca do środka. Każde rozpoczęcie sterowania ustawia gaz 0.</p>
+<div class="channel"><label for="channel">Kanał</label><select id="channel"><option value="1">Bit 1 · zgodny z ramką wzorcową</option><option value="0">Bit 0 · drugi kanał</option></select></div><p class="hint">Wybierz kanał, na którym reaguje helikopter. Zmieniaj go po zatrzymaniu.</p>
+<label class="slider-label" for="throttle">Gaz <output id="throttleValue">0 / 127 · 0%</output></label><input id="throttle" type="range" min="0" max="127" value="0"><div class="range-labels"><span>0 · wyłączony</span><span>127 · maksymalny</span></div>
+<div class="axes"><div><label class="slider-label" for="yaw">Skręt <output id="yawValue">63</output></label><input id="yaw" type="range" min="0" max="127" value="63"></div><div><label class="slider-label" for="pitch">Przód / tył <output id="pitchValue">63</output></label><input id="pitch" type="range" min="0" max="127" value="63"></div></div>
+<details><summary>Ustawienia kierunków i trymera</summary>
+<label class="slider-label" for="strength">Wychylenie strzałek <output id="strengthValue">32</output></label><input id="strength" type="range" min="1" max="64" value="32"><p class="hint">32 = połowa wychylenia, 64 = pełne. Zmieniaj przed rozpoczęciem sterowania.</p>
+<label class="check"><input id="invertYaw" type="checkbox"><span>Odwróć lewo / prawo</span></label>
+<label class="check"><input id="invertPitch" type="checkbox"><span>Odwróć przód / tył</span></label>
+<label class="slider-label" for="trim">Trymer <output id="trimValue">81</output></label><input id="trim" type="range" min="0" max="127" value="81"><p class="hint">Początkowe kierunki pochodzą z logów pilota. Jeżeli helikopter reaguje odwrotnie, zatrzymaj go i odwróć odpowiednią oś.</p>
+</details>
+<div class="actions"><button id="neutral" class="quiet">Wyzeruj gaz i wycentruj</button><span id="holdTime">0,0 s</span></div>
+<button id="hold" class="hold wide" disabled>Przytrzymaj Spację lub ten przycisk</button>
+<p class="hint">Puszczenie Spacji lub przycisku, Esc oraz przełączenie okna uruchamia STOP. Sterowanie nie ma limitu 10 sekund. Brak komend przez 0,5 s uruchamia STOP na ESP32.</p>
+</section>
+<section class="card test"><div class="title"><span class="step">02</span><div><h2>Test nadajnika IR</h2><p>Gaz 0 · 2 sekundy</p></div></div>
+<label class="check"><input id="receiverEnabled" type="checkbox"><span>Mam też podłączony odbiornik VS1838B na GPIO14 — pokaż jego odczyty.</span></label>
+<label class="check"><input id="heliOff" type="checkbox"><span>Helikopter i fabryczny pilot są wyłączone.</span></label><button id="test" class="primary wide" disabled>Uruchom test IR · 2 s</button>
+<div class="progress"><div id="progressFill"></div></div><p id="testResult" class="hint">Bez odbiornika panel nie potwierdza emisji optycznej ani odbioru przez helikopter.</p></section>
+</div>
+<aside>
+<section class="card telemetry"><p class="eyebrow">NA ŻYWO Z ESP32</p><h2 id="mode">Brak połączenia</h2><div class="meter"><span id="actualThrottle">0</span><span>gaz nadawany / 127</span></div><div class="metrics"><div><span>Wysłane ramki</span><b id="tx">0</b></div><div><span>Odebrane ramki</span><b id="rx">0</b></div><div><span>Poprawne S107</span><b id="clean">0</b></div><div><span>Seria wzorcowa</span><b id="best">0 / 10</b></div></div><div class="lastframe"><span>Ostatnia odebrana ramka</span><code id="lastFrame">— — — —</code></div><p id="reason" class="hint">Program nie nadaje po samym podłączeniu USB.</p></section>
+<section class="card note"><h3>Połączenie podczerwienią</h3><p>Skieruj diody na helikopter i wyłącz fabryczny pilot. STOP dotrze do helikoptera tylko wtedy, gdy odbiera on sygnał IR.</p><p id="rxDiagnostic">Odbiornik VS1838B jest opcjonalny.</p><p>Przed lotem sprawdź kierunki i reakcję na STOP oraz utratę sygnału bez łopat.</p></section>
+<section class="card log"><div class="title"><h3>Dziennik sterowania</h3><button id="download" class="quiet compact">Zapisz</button></div><pre id="log">Oczekiwanie na ESP32…</pre></section>
+</aside>
+</div><footer>Parakopter / Weronika + Emilia <span>3 × IR LED · 3V3 · BC547B</span></footer>
+</main><script src="/flight-keys.js"></script><script src="/app.js"></script></body></html>
