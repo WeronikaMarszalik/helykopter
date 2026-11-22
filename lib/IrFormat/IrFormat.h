@@ -3,8 +3,7 @@
 #include <cstdint>
 #include <string>
 
-// Interface fixed by the coordinator. Implement in IrFormat.cpp; do not change signatures.
-// Free functions in namespace irfmt (no class). Std C++ only, no Arduino includes.
+// Helpers for formatting captured IR frames. Standard C++ only, no Arduino includes.
 namespace irfmt {
 
 // Keep only [A-Za-z0-9_-], truncate to 32 chars; empty result -> "unlabeled".

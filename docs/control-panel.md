@@ -2,7 +2,7 @@
 
 Stan: 2026-11-03. Firmware `parakopter-tx-2`, USB-UART v1.
 Panel, serwer i ESP32 obsługują gaz **0–127**. Usunięto dawny limit 40/127
-i limit jednej sesji 10 s. Zmiana nastąpiła na wyraźną prośbę użytkowniczki.
+i limit jednej sesji 10 s.
 Sterownik w jądrze Linuksa pozostaje osobnym etapem.
 
 ## Uruchomienie
@@ -126,7 +126,7 @@ losowego tokenu. Nie publikować serwera w sieci.
 - Kompilacja Arduino ESP32 3.3.11: 286487 B programu, 23272 B RAM.
   Wgranie na COM4 zakończone weryfikacją sumy kontrolnej.
 - Kontrola w przeglądarce: suwak 127/127, powrót do 0, COM4 połączone,
-  firmware bezczynne, TX=0. Agent nie wykonywał próby silników.
+  firmware bezczynne, TX=0. Nie wykonano próby z włączonymi silnikami.
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s test -p test_control_panel.py -v
@@ -137,5 +137,5 @@ g++ -std=c++17 -Wall -Wextra -Werror test/controller_native.cpp -o .local/contro
 ```
 
 Do wgrania zamknij port używany przez panel i uruchom
-`.	oolsuild-firmware.ps1 -Upload -Port COM4`.
+`.\tools\build-firmware.ps1 -Upload -Port COM4`.
 Wdrażanie na Windows korzysta z Arduino CLI dołączonego do Arduino IDE.

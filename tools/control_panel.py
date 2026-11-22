@@ -105,14 +105,17 @@ class Bridge:
         with self.lock:
             self.session = 0
             self.owner = None
-            if self.device:
-                try:
-                    self.write("STOP")
-                finally:
-                    self.device.close()
-                    self.device = None
-            self.port = None
-            self.state = {}
+            try:
+                if self.device:
+                    try:
+                        self.write("STOP")
+                    finally:
+                        self.device.close()
+                        self.device = None
+            finally:
+                # Reset even when the final STOP could not be written.
+                self.port = None
+                self.state = {}
 
     def stop(self):
         with self.lock:

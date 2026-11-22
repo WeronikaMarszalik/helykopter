@@ -77,6 +77,15 @@ class PanelTest(unittest.TestCase):
         self.bridge.action('control',data)
         with self.assertRaises(ValueError):self.bridge.action('control',data)
         self.assertEqual(self.fake.commands[-1],'STOP')
+    def test_disconnect_resets_state_when_stop_fails(self):
+        def broken_write(value): raise OSError('usb gone')
+        self.fake.write=broken_write
+        with self.bridge.lock:self.bridge.port='COM4'
+        with self.assertRaises(ValueError):self.bridge.disconnect()
+        self.assertIsNone(self.bridge.device)
+        self.assertIsNone(self.bridge.port)
+        self.assertEqual(self.bridge.state,{})
+        self.assertEqual(self.bridge.session,0)
     def test_foreign_origin_rejected(self):
         server=panel.ThreadingHTTPServer(('127.0.0.1',0),panel.BaseHTTPRequestHandler)
         port=server.server_port
